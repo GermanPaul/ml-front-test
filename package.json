@@ -1,0 +1,25 @@
+{
+  "name": "ml-front-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GermanPaul/ml-front-test.git"
+  },
+  "author": "German Pretelt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GermanPaul/ml-front-test/issues"
+  },
+  "homepage": "https://github.com/GermanPaul/ml-front-test#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  }
+}
