@@ -4,8 +4,8 @@
     <input
       class="search-box__input"
       type="text"
-      name=""
-      id=""
+      name="search-box"
+      id="search-box"
       placeholder="Nunca dejes de buscar"
       v-model="query"
       v-on:keyup.enter="search()"
