@@ -1,7 +1,9 @@
 const axios = require('axios');
+const { response } = require('express');
 const apiUrl = 'https://api.mercadolibre.com';
 const sitesEndpoint = `${apiUrl}/sites/MLA/search`;
 const itemsEndpoint = `${apiUrl}/items/{id}`;
+const categoryEndpoint = `${apiUrl}/categories/{id}`;
 
 module.exports = {
   getItems: (req, res) => {
@@ -14,10 +16,11 @@ module.exports = {
       }
     }).then(function (response) {
       const categories = [];
-      const categoryFilter = response.data.available_filters.filter(item => item.id === 'category');
-      if (categoryFilter.length > 0) {
-        categoryFilter[0].values.forEach(category => {
-          categories.push(category.name);
+      const categoryFilter = response.data.filters.filter(item => item.id === 'category');
+      const availableCategoryFilter = response.data.available_filters.filter(item => item.id === 'category');
+      if (categoryFilter.length > 0 && categoryFilter[0].values.length > 0) {
+        categoryFilter[0].values[0].path_from_root.forEach(path => {
+          categories.push(path.name);
         })
       }
       const items = [];
@@ -31,7 +34,8 @@ module.exports = {
           },
           picture: result.thumbnail,
           condition: result.condition,
-          free_shipping: result.shipping.free_shipping
+          free_shipping: result.shipping.free_shipping,
+          state_name: result.address.state_name
         });
       });
       const formattedResponse = {
@@ -49,11 +53,12 @@ module.exports = {
   },
   getItem: (req, res) => {
     const itemUrl = itemsEndpoint.replace('{id}', req.params.id);
+    let formattedResponse = {};
     axios.all([
       axios.get(itemUrl),
       axios.get(`${itemUrl}/description`)
     ]).then(axios.spread((...responses) => {
-      const formattedResponse = {
+      formattedResponse = {
         author: {
           name: 'German',
           lastname: 'Pretelt'
@@ -72,8 +77,16 @@ module.exports = {
           description: responses[1].data.plain_text
         }
       };
+      const categoryUrl = categoryEndpoint.replace('{id}', responses[0].data.category_id);
+      return axios.get(categoryUrl);
+    })).then(response => {
+      const categories = [];
+      response.data.path_from_root.forEach(category => {
+        categories.push(category.name);
+      });
+      formattedResponse.item.categories = categories;
       res.json(formattedResponse);
-    })).catch(function (error) {
+    }).catch(function (error) {
       res.status(500).json(error.message);
     });
   }

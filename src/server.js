@@ -17,7 +17,7 @@ app.use(cors());
 // routes
 app.use('/api', router);
 
-app.use(express.static(path.join(__dirname, '../vue-client/dist')));
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.listen(app.get('port'), () => {
 	console.log(`server on port ${app.get('port')}`);
