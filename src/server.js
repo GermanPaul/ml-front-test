@@ -16,6 +16,9 @@ app.use(cors());
 
 // routes
 app.use('/api', router);
+app.get('/items*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'));
+});
 
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
