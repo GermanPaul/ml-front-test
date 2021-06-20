@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Server",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\src\\server.js",
+            "args": ["-r", "dotenv/config"],
+            "env": {
+                "PORT": "4000",
+                "API_URL": "https://api.mercadolibre.com"
+            }
+        }
+    ]
+}

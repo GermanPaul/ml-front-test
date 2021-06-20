@@ -7,7 +7,7 @@ const app = express();
 const router = require('./routes/proxy');
 
 // settings
-app.set('port', process.env.PORT || 4000);
+app.set('port', parseInt(process.env.PORT) || 4000);
 
 // middlewares
 app.use(express.json());
