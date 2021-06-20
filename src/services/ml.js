@@ -1,6 +1,6 @@
 const axios = require('axios');
-const { response } = require('express');
-const apiUrl = 'https://api.mercadolibre.com';
+
+const apiUrl = process.env.API_URL;
 const sitesEndpoint = `${apiUrl}/sites/MLA/search`;
 const itemsEndpoint = `${apiUrl}/items/{id}`;
 const categoryEndpoint = `${apiUrl}/categories/{id}`;
@@ -17,7 +17,6 @@ module.exports = {
     }).then(function (response) {
       const categories = [];
       const categoryFilter = response.data.filters.filter(item => item.id === 'category');
-      const availableCategoryFilter = response.data.available_filters.filter(item => item.id === 'category');
       if (categoryFilter.length > 0 && categoryFilter[0].values.length > 0) {
         categoryFilter[0].values[0].path_from_root.forEach(path => {
           categories.push(path.name);

@@ -1,5 +1,5 @@
 # ml-front-test
-Mercado Libre front-end technical test. It is comprised of a NodeJS server working with a VueJS project in order to consume Mercado Libre products API.
+ML front-end technical test. It is comprised of a NodeJS server working with a VueJS project in order to consume ML products API.
 
 ## Requisites
 This project requires NodeJS.
