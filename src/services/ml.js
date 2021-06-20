@@ -1,4 +1,6 @@
 const axios = require('axios');
+const Items = require('../helpers/items');
+const Item = require('../helpers/item');
 
 const apiUrl = process.env.API_URL;
 const sitesEndpoint = `${apiUrl}/sites/MLA/search`;
@@ -14,29 +16,10 @@ module.exports = {
       params: {
         q: req.query.q
       }
-    }).then(function (response) {
-      const categories = [];
-      const categoryFilter = response.data.filters.filter(item => item.id === 'category');
-      if (categoryFilter.length > 0 && categoryFilter[0].values.length > 0) {
-        categoryFilter[0].values[0].path_from_root.forEach(path => {
-          categories.push(path.name);
-        })
-      }
-      const items = [];
-      response.data.results.forEach(result => {
-        items.push({
-          id: result.id,
-          title: result.title,
-          price: {
-            currency: result.currency_id,
-            amount: result.price
-          },
-          picture: result.thumbnail,
-          condition: result.condition,
-          free_shipping: result.shipping.free_shipping,
-          state_name: result.address.state_name
-        });
-      });
+    }).then((response) => {
+      const data = response.data;
+      const categories = Items.getCategories(data);
+      const items = Items.getItems(data);
       const formattedResponse = {
         author: {
           name: 'German',
@@ -46,8 +29,12 @@ module.exports = {
         items: items
       };
       res.json(formattedResponse);
-    }).catch(function (error) {
-      res.status(500).json(error.message);
+    }).catch((error) => {
+      if(error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        res.status(500).json(error.message);
+      };
     })
   },
   getItem: (req, res) => {
@@ -57,36 +44,20 @@ module.exports = {
       axios.get(itemUrl),
       axios.get(`${itemUrl}/description`)
     ]).then(axios.spread((...responses) => {
-      formattedResponse = {
-        author: {
-          name: 'German',
-          lastname: 'Pretelt'
-        },
-        item: {
-          id: responses[0].data.id,
-          title: responses[0].data.title,
-          price: {
-            currency: responses[0].data.currency_id,
-            amount: responses[0].data.price
-          },
-          picture: responses[0].data.thumbnail,
-          condition: responses[0].data.condition,
-          free_shipping: responses[0].data.shipping.free_shipping,
-          sold_quantity: responses[0].data.sold_quantity,
-          description: responses[1].data.plain_text
-        }
-      };
+      const itemResponse = responses[0].data;
+      const descriptionResponse = responses[1].data;
+      formattedResponse = Item.formatResponse(itemResponse, descriptionResponse);
       const categoryUrl = categoryEndpoint.replace('{id}', responses[0].data.category_id);
       return axios.get(categoryUrl);
     })).then(response => {
-      const categories = [];
-      response.data.path_from_root.forEach(category => {
-        categories.push(category.name);
-      });
-      formattedResponse.item.categories = categories;
+      formattedResponse.item.categories = Item.getCategories(response.data);
       res.json(formattedResponse);
-    }).catch(function (error) {
-      res.status(500).json(error.message);
+    }).catch((error) => {
+      if(error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        res.status(500).json(error.message);
+      };
     });
   }
-}
+};
