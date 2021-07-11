@@ -1,7 +1,7 @@
 {
   "name": "ml-front-test",
   "version": "1.0.0",
-  "description": "Mercado Libre front-end technical test.",
+  "description": "ML front-end technical test.",
   "main": "src/server.js",
   "scripts": {
     "start": "node -r dotenv/config src/server.js",
